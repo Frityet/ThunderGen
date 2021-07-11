@@ -5,15 +5,6 @@
 #ifndef THUNDERGEN_COMMON
 #define THUNDERGEN_COMMON
 
-//REPLACE THIS WITH DYNAMIC SYSTEM
-typedef enum {
-    BEPINEX,
-    WURSTMOD,
-    DELI,
-    OTHERLOADER,
-    TNH_TWEAKER
-} dependencies;
-
 static const char VERSION[] = "v1.0.0";
 
 static const char MANIFEST_TEMPLATE[] = "{\n"
@@ -41,7 +32,13 @@ throw_error(const char*, int);
 void*
 input(const char*, const char*);
 
-char**
-read_all_lines(const char*, size_t, size_t);
+char*
+read_all_lines(const char*);
+
+char*
+fread_all_lines(FILE*);
+
+int
+check_ptr(void*);
 
 #endif //THUNDERGEN_COMMON

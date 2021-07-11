@@ -28,32 +28,45 @@ input(const char *format, const char *msg)
     return buffer;
 }
 
-char**
-read_all_lines(const char *filepath, size_t max_lines, size_t line_len)
+char*
+read_all_lines(const char *filepath)
 {
     //I think the way I made this is sinking in memory leaks
     //but
     //I think it works???
     FILE *file = fopen(filepath, "w+");
-
-    if (file == NULL) throw_error("Could not read file", -1);
-
+    check_ptr(file);
     fseek(file, 0, SEEK_SET);
+    size_t fsize = ftell(file);
+    rewind(file);
 
-    char **lines = malloc(sizeof(char**) * max_lines); //Generate a 2D array which will represent the lines of the file. We init the first dimension (the number of lines)
-    if (lines == NULL) throw_error("Could not allocate memory", -1);
-
-    lines[0] = malloc(sizeof(char*) * line_len);
-    if (lines[0] == NULL) throw_error("Could not allocate memory", -1);
-    int index = 0;
-    while (fgets(lines[index], line_len, file))
-    {
-
-
-        ++index;
-    }
+    char *contents = malloc(sizeof(char) * fsize);
+    fread(contents, 1, fsize, file);
 
     fclose(file);
 
-    return lines;
+    return contents;
+}
+
+char*
+fread_all_lines(FILE *file)
+{
+    fseek(file, 0, SEEK_SET);
+    size_t fsize = ftell(file);
+    rewind(file);
+
+    char *contents = malloc(sizeof(char) * fsize);
+    fread(contents, 1, fsize, file);;
+
+    fclose(file);
+
+    return contents;
+}
+
+int
+check_ptr(void *ptr)
+{
+    if (ptr == NULL) throw_error("Pointer is null", -1);
+    else return 1;
+    return 1;
 }
