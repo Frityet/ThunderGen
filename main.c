@@ -11,17 +11,24 @@ main(int    argc,
 
     manifest test = create_manifest_file();
 
-    test.name           = input("%s", "Name: ");
-    test.version        = input("%s", "Version: ");
-    test.website        = input("%s", "Website: ");
-    test.description    = input("%s", "Description: ");
+    test.name           = input_str("Name: ");
+    test.version        = input_str("Version: ");
+    test.website        = input_str("Website: ");
+    test.description    = input_str("Description: ");
 
-    test.dependency_count = (size_t)input("%zu", "Number of dependencies: ");
+    printf("Number of Dependencies: ");
+    //TODO: Use strtoul instead
+    scanf("%d", &test.dependency_count);
+
+    if (test.dependency_count > 16) throw_error("Dependency count is too high, possible error", -1);
+
     for (int i = 0; i < test.dependency_count; ++i)
     {
-        printf("Dependency %d/%zu\n", i, test.dependency_count);
-        test.dependencies[i] = input("%s", "Dependency: ");
+        printf("Dependency %d/%d\n", i, test.dependency_count);
+        test.dependencies[i] = input_str("Dependency: ");
     }
+
+    printf("Result: %s\n", manifest_to_json_str(test));
 
     set_manifest_file(test);
 

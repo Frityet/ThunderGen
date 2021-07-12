@@ -31,8 +31,8 @@ static const char EXAMPLE_MANIFEST[] = "{\n"
 int
 throw_error(const char*, int);
 
-void*
-input(const char*, const char*);
+char*
+input_str(const char*);
 
 char*
 read_all_lines(const char*);

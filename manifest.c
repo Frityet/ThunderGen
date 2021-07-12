@@ -2,8 +2,6 @@
 // Created by Frityet on 2021-07-10.
 //
 
-#include <string.h>
-
 #include "common.h"
 #include "manifest.h"
 
@@ -23,8 +21,6 @@ create_manifest_file(void)
 int
 set_manifest_file(manifest data)
 {
-    char *raw = read_all_lines(FILE_NAME);
-
     FILE *file = fopen(FILE_NAME, "w");
     check_ptr(file);
 
@@ -50,13 +46,16 @@ load_manifest_from_string(const char *template)
     json_object_object_get_ex(tsmanifest_raw.root, "dependencies", &tsmanifest_raw.dependencies);
     tsmanifest_raw.dependency_count = json_object_array_length(tsmanifest_raw.dependencies);
 
+    ++tsmanifest_raw.dependency_count;
+
     return json_obj_to_manifest(tsmanifest_raw);
 }
 
 const char*
 manifest_to_json_str(manifest tsmanifest)
 {
-    return json_object_to_json_string_ext(manifest_to_json_obj(tsmanifest).root, JSON_C_TO_STRING_NOSLASHESCAPE);
+    //printf("%s", tsmanifest.dependencies[0]);
+    return json_object_to_json_string_ext(manifest_to_json_obj(tsmanifest).root, JSON_C_TO_STRING_PRETTY_TAB + JSON_C_TO_STRING_NOSLASHESCAPE);
 }
 
 static manifest_jobject

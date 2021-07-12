@@ -19,12 +19,12 @@ throw_error(const char* msg, int exit_code)
     return 1;
 }
 
-void*
-input(const char *format, const char *msg)
+char*
+input_str(const char *msg)
 {
-    void *buffer = malloc(sizeof(char) * 256);
+    char *buffer = malloc(sizeof(char) * 256);
     printf("%s", msg);
-    scanf(format, buffer);
+    scanf("%s", buffer);
     return buffer;
 }
 
@@ -58,8 +58,6 @@ fread_all_lines(FILE *file)
     char *contents = malloc(sizeof(char) * fsize);
     fread(contents, 1, fsize, file);;
 
-    fclose(file);
-
     return contents;
 }
 
@@ -68,5 +66,5 @@ check_ptr(void *ptr)
 {
     if (ptr == NULL) throw_error("Pointer is null", -1);
     else return 1;
-    return 1;
+    return 0;
 }
