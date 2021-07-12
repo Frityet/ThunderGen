@@ -3,7 +3,6 @@
 //
 
 #include <string.h>
-#include <json-c/json.h>
 
 #include "common.h"
 #include "manifest.h"
@@ -29,7 +28,7 @@ set_manifest_file(manifest data)
     FILE *file = fopen(FILE_NAME, "w");
     check_ptr(file);
 
-
+    fprintf(file, "%s", manifest_to_json_str(data));
 
     fclose(file);
 
@@ -39,8 +38,6 @@ set_manifest_file(manifest data)
 static manifest
 load_manifest_from_string(const char *template)
 {
-    manifest tsmanifest;
-
     manifest_jobject tsmanifest_raw;
 
     tsmanifest_raw.root = json_tokener_parse(template);
@@ -53,30 +50,64 @@ load_manifest_from_string(const char *template)
     json_object_object_get_ex(tsmanifest_raw.root, "dependencies", &tsmanifest_raw.dependencies);
     tsmanifest_raw.dependency_count = json_object_array_length(tsmanifest_raw.dependencies);
 
-    tsmanifest.name         = json_object_get_string(tsmanifest_raw.name);
-    tsmanifest.version      = json_object_get_string(tsmanifest_raw.version);
-    tsmanifest.website      = json_object_get_string(tsmanifest_raw.website);
-    tsmanifest.description  = json_object_get_string(tsmanifest_raw.description);
-
-    for (int i = 0; i < tsmanifest_raw.dependency_count; ++i)
-    {
-        tsmanifest.dependencies[i] = json_object_get_string(json_object_array_get_idx(tsmanifest_raw.dependencies, i));
-    }
-
-    tsmanifest.dependency_count = tsmanifest_raw.dependency_count;
-    return tsmanifest;
+    return json_obj_to_manifest(tsmanifest_raw);
 }
 
-static char*
+const char*
 manifest_to_json_str(manifest tsmanifest)
 {
-
+    return json_object_to_json_string_ext(manifest_to_json_obj(tsmanifest).root, JSON_C_TO_STRING_NOSLASHESCAPE);
 }
 
 static manifest_jobject
 manifest_to_json_obj(manifest tsmanifest)
 {
-    manifest_jobject obj;
+    manifest_jobject jobj;
 
-    obj.root =
+    jobj.root = json_object_new_object();
+    check_ptr(jobj.root);
+
+    //Move the information into the root object
+    json_object_object_add(jobj.root, "name", json_object_new_string(tsmanifest.name));
+    json_object_object_add(jobj.root, "version_number", json_object_new_string(tsmanifest.version));
+    json_object_object_add(jobj.root, "website_url", json_object_new_string(tsmanifest.website));
+    json_object_object_add(jobj.root, "description", json_object_new_string(tsmanifest.description));
+
+    //Dependencies has to be it's own object
+    jobj.dependencies = json_object_new_array();
+    json_object_object_add(jobj.root, "dependencies", jobj.dependencies);
+
+    for (int i = 0; i < tsmanifest.dependency_count; ++i)
+    {
+        //For every dependency in the manifest, add it to the array
+        json_object_array_add(jobj.dependencies, json_object_new_string(tsmanifest.dependencies[i]));
+    }
+
+    //Assign the values from the root object to the struct fields
+    json_object_object_get_ex(jobj.root, "name", &jobj.name);
+    json_object_object_get_ex(jobj.root, "version_number", &jobj.version);
+    json_object_object_get_ex(jobj.root, "website_url", &jobj.website);
+    json_object_object_get_ex(jobj.root, "description", &jobj.description);
+
+    return jobj;
+}
+
+static manifest
+json_obj_to_manifest(manifest_jobject jobj)
+{
+    manifest tsmanifest;
+
+    tsmanifest.name         = json_object_get_string(jobj.name);
+    tsmanifest.version      = json_object_get_string(jobj.version);
+    tsmanifest.website      = json_object_get_string(jobj.website);
+    tsmanifest.description  = json_object_get_string(jobj.description);
+
+    for (int i = 0; i < jobj.dependency_count; ++i)
+    {
+        tsmanifest.dependencies[i] = json_object_get_string(json_object_array_get_idx(jobj.dependencies, i));
+    }
+
+    tsmanifest.dependency_count = jobj.dependency_count;
+
+    return tsmanifest;
 }

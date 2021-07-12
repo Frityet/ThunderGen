@@ -6,6 +6,7 @@
 #define THUNDERGEN_MANIFEST
 
 #include <stdio.h>
+#include <json-c/json.h>
 
 static const char FILE_NAME[] = "manifest.json";
 
@@ -42,7 +43,7 @@ set_manifest_file(manifest);
 static manifest
 load_manifest_from_string(const char*);
 
-static char*
+const char*
 manifest_to_json_str(manifest);
 
 static manifest_jobject

@@ -5,6 +5,8 @@
 #ifndef THUNDERGEN_COMMON
 #define THUNDERGEN_COMMON
 
+#include <stdio.h>
+
 static const char VERSION[] = "v1.0.0";
 
 static const char MANIFEST_TEMPLATE[] = "{\n"
