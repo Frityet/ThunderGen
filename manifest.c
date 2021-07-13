@@ -58,6 +58,39 @@ manifest_to_json_str(manifest tsmanifest)
     return json_object_to_json_string_ext(manifest_to_json_obj(tsmanifest).root, JSON_C_TO_STRING_PRETTY_TAB + JSON_C_TO_STRING_NOSLASHESCAPE);
 }
 
+int
+destroy_manifest(manifest tsmanifest)
+{
+    free_ptr(tsmanifest.name);
+    free_ptr(tsmanifest.version);
+    free_ptr(tsmanifest.website);
+    free_ptr(tsmanifest.description);
+
+    for (int i = 0; i < tsmanifest.dependency_count; ++i)
+    {
+        free_ptr(tsmanifest.dependencies[i]);
+    }
+
+    free_ptr(tsmanifest.dependencies);
+    return 0;
+}
+
+int
+destroy_json_obj(manifest_jobject jobj)
+{
+    json_object_object_del(jobj.root, "name");
+    jobj.name = NULL;
+    json_object_object_del(jobj.root, "version_number");
+    jobj.version = NULL;
+    json_object_object_del(jobj.root, "website_url");
+    jobj.website = NULL;
+    json_object_object_del(jobj.root, "description");
+    jobj.description = NULL;
+    json_object_object_del(jobj.root, "dependencies");
+    jobj.dependencies = NULL;
+    return 0;
+}
+
 static manifest_jobject
 manifest_to_json_obj(manifest tsmanifest)
 {
@@ -101,6 +134,7 @@ json_obj_to_manifest(manifest_jobject jobj)
     tsmanifest.website      = json_object_get_string(jobj.website);
     tsmanifest.description  = json_object_get_string(jobj.description);
 
+    tsmanifest.dependencies = malloc(sizeof(char**) * jobj.dependency_count);
     for (int i = 0; i < jobj.dependency_count; ++i)
     {
         tsmanifest.dependencies[i] = json_object_get_string(json_object_array_get_idx(jobj.dependencies, i));

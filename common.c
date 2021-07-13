@@ -68,3 +68,11 @@ check_ptr(void *ptr)
     else return 1;
     return 0;
 }
+
+int
+free_ptr(void* ptr)
+{
+    free(ptr);
+    ptr = NULL;
+    return 0;
+}

@@ -43,4 +43,7 @@ fread_all_lines(FILE*);
 int
 check_ptr(void*);
 
+int
+free_ptr(void*);
+
 #endif //THUNDERGEN_COMMON

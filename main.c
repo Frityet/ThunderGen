@@ -28,12 +28,12 @@ main(int    argc,
         test.dependencies[i] = input_str("Dependency: ");
     }
 
-    printf("Result: %s\n", manifest_to_json_str(test));
-
+    printf("Writing to manifest.json...\n");
     set_manifest_file(test);
-
-    printf("Done!");
-
+    printf("Done!\n");
+    printf("Cleaning up..\n");
+    destroy_manifest(test);
+    printf("Done!\n");
 
     return 0;
 }

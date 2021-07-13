@@ -43,6 +43,12 @@ set_manifest_file(manifest);
 const char*
 manifest_to_json_str(manifest);
 
+int
+destroy_manifest(manifest);
+
+int
+destroy_json_obj(manifest_jobject);
+
 static manifest
 load_manifest_from_string(const char*);
 
